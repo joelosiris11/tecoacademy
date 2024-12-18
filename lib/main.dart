@@ -53,7 +53,8 @@ class HomePage extends StatelessWidget {
               icon: const Icon(Icons.people),
               label: const Text('Social Feed'),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
             ),
             const SizedBox(height: 20),
@@ -67,7 +68,8 @@ class HomePage extends StatelessWidget {
               icon: const Icon(Icons.dashboard),
               label: const Text('Dashboard'),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
             ),
           ],
