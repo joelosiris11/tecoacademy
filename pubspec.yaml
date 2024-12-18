@@ -33,4 +33,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  
+  assets:
+    - lib/social/image/original-6f715fc3b06a50913ce2693c0875ee19.png
