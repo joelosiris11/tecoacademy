@@ -1,0 +1,12 @@
+{
+  "name": "tecoacademy-demo-data",
+  "version": "1.0.0",
+  "description": "Demo data loader for TecoAcademy",
+  "main": "loadDemoData.js",
+  "scripts": {
+    "load": "node loadDemoData.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.11.0"
+  }
+} 

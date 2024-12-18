@@ -1,0 +1,254 @@
+{
+  "users": {
+    "admin1": {
+      "profile": {
+        "email": "admin@tecoacademy.com",
+        "username": "admin_principal",
+        "fullName": "Admin Principal",
+        "role": "admin",
+        "bio": "Administrador principal de TecoAcademy",
+        "avatarUrl": "https://ui-avatars.com/api/?name=Admin+Principal",
+        "xpTotal": 5000,
+        "level": 10,
+        "achievements": ["master_admin", "system_pioneer"],
+        "badges": ["admin_badge", "mentor_badge"],
+        "joinDate": "2024-01-01",
+        "lastActive": "2024-03-19"
+      },
+      "preferences": {
+        "notifications": true,
+        "emailUpdates": true,
+        "language": "es"
+      }
+    },
+    "teacher1": {
+      "profile": {
+        "email": "profesor@tecoacademy.com",
+        "username": "prof_juan",
+        "fullName": "Juan Pérez",
+        "role": "teacher",
+        "bio": "Profesor de programación con 10 años de experiencia",
+        "avatarUrl": "https://ui-avatars.com/api/?name=Juan+Perez",
+        "xpTotal": 3000,
+        "level": 8,
+        "achievements": ["master_teacher", "course_creator"],
+        "badges": ["teacher_badge", "python_expert"],
+        "joinDate": "2024-01-15",
+        "lastActive": "2024-03-19"
+      },
+      "schedule": {
+        "days": ["Lunes", "Miércoles", "Viernes"],
+        "shift": "tarde",
+        "preferredTimeZone": "America/Mexico_City"
+      }
+    },
+    "student1": {
+      "profile": {
+        "email": "estudiante@tecoacademy.com",
+        "username": "estudiante_maria",
+        "fullName": "María García",
+        "role": "student",
+        "bio": "Estudiante apasionada por la programación",
+        "avatarUrl": "https://ui-avatars.com/api/?name=Maria+Garcia",
+        "xpTotal": 1200,
+        "level": 4,
+        "achievements": ["quick_learner", "first_project"],
+        "badges": ["python_beginner", "git_basics"],
+        "joinDate": "2024-02-01",
+        "lastActive": "2024-03-19"
+      },
+      "schedule": {
+        "days": ["Lunes", "Miércoles", "Viernes"],
+        "shift": "tarde",
+        "preferredTimeZone": "America/Mexico_City"
+      },
+      "group": "grupo_principiantes_2024",
+      "stats": {
+        "postsCount": 15,
+        "followersCount": 5,
+        "followingCount": 10,
+        "completedCourses": 2,
+        "totalProjectsCompleted": 3,
+        "commentsCount": 25
+      }
+    }
+  },
+  "courses": {
+    "python_basics": {
+      "name": "Fundamentos de Python",
+      "description": "Curso introductorio a la programación con Python",
+      "thumbnail": "https://example.com/python-basics.jpg",
+      "category": "Programación",
+      "level": "Principiante",
+      "duration": "4 semanas",
+      "month": 3,
+      "week": 1,
+      "programmingModule": true,
+      "creationModule": false,
+      "status": "active",
+      "enrollmentCount": 25,
+      "rating": 4.5,
+      "modules": [
+        {
+          "name": "Introducción a Python",
+          "description": "Conceptos básicos y configuración del entorno",
+          "order": 1,
+          "type": "theory",
+          "xpValue": 100,
+          "content": [
+            "Instalación de Python",
+            "Uso del IDLE",
+            "Primera aplicación"
+          ],
+          "resources": [
+            {
+              "type": "video",
+              "url": "https://example.com/intro-python.mp4",
+              "title": "Introducción a Python"
+            }
+          ],
+          "quizzes": [
+            {
+              "title": "Quiz 1: Conceptos Básicos",
+              "questions": [
+                {
+                  "question": "¿Qué es Python?",
+                  "options": ["Lenguaje de programación", "Base de datos", "Sistema operativo"],
+                  "correct": 0
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "mentor": {
+        "id": "teacher1",
+        "name": "Juan Pérez",
+        "photoUrl": "https://ui-avatars.com/api/?name=Juan+Perez",
+        "specialization": "Python"
+      }
+    }
+  },
+  "projects": {
+    "project1": {
+      "name": "App del Clima",
+      "description": "Proyecto para crear una aplicación del clima usando Python",
+      "status": "in_progress",
+      "group": "grupo_principiantes_2024",
+      "startDate": "2024-03-01",
+      "endDate": "2024-03-30",
+      "thumbnail": "https://example.com/weather-app.jpg",
+      "members": {
+        "student1": {
+          "role": "developer",
+          "joinDate": "2024-03-01",
+          "permissions": ["edit", "comment"]
+        }
+      },
+      "kanban": {
+        "columns": [
+          {
+            "id": "todo",
+            "title": "Por hacer",
+            "order": 0,
+            "tasks": ["task1", "task2"]
+          },
+          {
+            "id": "in_progress",
+            "title": "En progreso",
+            "order": 1,
+            "tasks": ["task3"]
+          },
+          {
+            "id": "done",
+            "title": "Completado",
+            "order": 2,
+            "tasks": []
+          }
+        ],
+        "tasks": [
+          {
+            "id": "task1",
+            "title": "Diseño de la interfaz",
+            "description": "Crear mockups de la aplicación",
+            "status": "todo",
+            "priority": "high",
+            "assignees": ["student1"],
+            "dueDate": "2024-03-25"
+          }
+        ]
+      }
+    }
+  },
+  "social": {
+    "posts": {
+      "post1": {
+        "userId": "student1",
+        "content": "¡Acabo de completar mi primer módulo de Python! 🎉",
+        "type": "achievement",
+        "media": [],
+        "likes": ["teacher1"],
+        "comments": [
+          {
+            "userId": "teacher1",
+            "content": "¡Excelente trabajo! Sigue así.",
+            "timestamp": "2024-03-19T15:30:00Z",
+            "likes": ["student1"]
+          }
+        ],
+        "timestamp": "2024-03-19T15:00:00Z"
+      }
+    }
+  },
+  "achievements": {
+    "quick_learner": {
+      "title": "Aprendiz Veloz",
+      "description": "Completó 3 módulos en una semana",
+      "icon": "🚀",
+      "xpValue": 200,
+      "category": "learning",
+      "rarity": "uncommon",
+      "unlockedBy": ["student1"]
+    }
+  },
+  "statistics": {
+    "student1_stats": {
+      "userId": "student1",
+      "weeklyActivity": {
+        "2024-03-13": 5.5,
+        "2024-03-14": 4.2,
+        "2024-03-15": 6.1,
+        "2024-03-16": 3.8,
+        "2024-03-17": 5.0,
+        "2024-03-18": 4.5,
+        "2024-03-19": 5.8
+      },
+      "platformUsage": {
+        "mobile": 40,
+        "desktop": 55,
+        "tablet": 5
+      },
+      "learningPath": {
+        "currentLevel": 4,
+        "progress": 75,
+        "nextMilestone": "complete_first_project"
+      }
+    }
+  },
+  "groups": {
+    "grupo_principiantes_2024": {
+      "name": "Grupo Principiantes 2024",
+      "description": "Grupo de estudiantes iniciando en programación",
+      "members": ["student1"],
+      "admins": ["teacher1"],
+      "courses": ["python_basics"],
+      "projects": ["project1"],
+      "schedule": {
+        "days": ["Lunes", "Miércoles", "Viernes"],
+        "shift": "tarde",
+        "startTime": "14:00",
+        "endTime": "18:00"
+      }
+    }
+  }
+} 
