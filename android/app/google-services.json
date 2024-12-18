@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "587278135241",
+    "firebase_url": "https://tecoacademy-40ade-default-rtdb.firebaseio.com",
+    "project_id": "tecoacademy-40ade",
+    "storage_bucket": "tecoacademy-40ade.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:587278135241:android:3702c0028152eedc2b8218",
+        "android_client_info": {
+          "package_name": "com.teco.tecoacademy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4Uikhz100N3dmS10fOxLkGGbgYLqPTG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
