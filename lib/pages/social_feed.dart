@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'add_post_screen.dart';
 import 'add_story_screen.dart';
+import 'favorites_screen.dart';
+import 'profile_screen.dart';
 
 class SocialFeed extends StatefulWidget {
   const SocialFeed({super.key});
@@ -40,8 +42,8 @@ class _SocialFeedState extends State<SocialFeed> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text('Social', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('SocialTeco',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
@@ -84,7 +86,7 @@ class _SocialFeedState extends State<SocialFeed> {
             MaterialPageRoute(builder: (context) => const AddPostScreen()),
           );
         },
-        backgroundColor: Colors.amber,
+        backgroundColor: Colors.lightBlue,
         shape: const CircleBorder(),
         child: const Icon(Icons.add),
       ),
@@ -92,17 +94,44 @@ class _SocialFeedState extends State<SocialFeed> {
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 8.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(icon: const Icon(Icons.home), onPressed: () {}),
-            IconButton(icon: const Icon(Icons.search), onPressed: () {}),
-            const SizedBox(width: 32),
-            IconButton(
-                icon: const Icon(Icons.favorite_border), onPressed: () {}),
-            IconButton(
-                icon: const Icon(Icons.person_outline), onPressed: () {}),
-          ],
+        color: Colors.blue[400],
+        child: Container(
+          height: 60,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.home, color: Colors.white),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: const Icon(Icons.search, color: Colors.white),
+                onPressed: () {},
+              ),
+              const SizedBox(width: 40),
+              IconButton(
+                icon: const Icon(Icons.favorite_border, color: Colors.white),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FavoritesScreen()),
+                  );
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.person_outline, color: Colors.white),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ProfileScreen()),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -126,7 +155,7 @@ class _SocialFeedState extends State<SocialFeed> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: Colors.amber,
+                  color: Colors.lightBlue,
                   width: 2,
                 ),
               ),
@@ -147,8 +176,9 @@ class _SocialFeedState extends State<SocialFeed> {
   }
 
   Widget _buildPost(int index) {
-    if (_likedPosts.isEmpty)
+    if (_likedPosts.isEmpty) {
       return const SizedBox(); // Retorna un widget vacío mientras se cargan los datos
+    }
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),

@@ -36,7 +36,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
             },
             child: const Text('Publicar',
                 style: TextStyle(
-                    color: Colors.amber, fontWeight: FontWeight.bold)),
+                    color: Colors.lightBlue, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

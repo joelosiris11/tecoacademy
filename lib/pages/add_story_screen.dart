@@ -57,7 +57,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                         // Aquí iría la lógica para seleccionar una imagen de la galería
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber,
+                        backgroundColor: Colors.lightBlue,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
@@ -73,7 +73,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                         // Aquí iría la lógica para tomar una foto
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber,
+                        backgroundColor: Colors.lightBlue,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
