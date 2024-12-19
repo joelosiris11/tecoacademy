@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'add_post_screen.dart';
 import 'add_story_screen.dart';
 import 'favorites_screen.dart';
 import 'profile_screen.dart';
+import 'search_screen.dart';
 
 class SocialFeed extends StatefulWidget {
   const SocialFeed({super.key});
@@ -16,6 +16,11 @@ class SocialFeed extends StatefulWidget {
 class _SocialFeedState extends State<SocialFeed> {
   List<bool> _likedPosts = [];
   late SharedPreferences _prefs;
+  final List<List<String>> _postComments = [[], []];
+  final List<TextEditingController> _commentControllers = [
+    TextEditingController(),
+    TextEditingController(),
+  ];
 
   @override
   void initState() {
@@ -23,11 +28,23 @@ class _SocialFeedState extends State<SocialFeed> {
     _loadLikedPosts();
   }
 
+  @override
+  void dispose() {
+    for (var controller in _commentControllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
   Future<void> _loadLikedPosts() async {
     _prefs = await SharedPreferences.getInstance();
     setState(() {
       _likedPosts = List.generate(
           2, (index) => _prefs.getBool('post_liked_$index') ?? false);
+
+      for (int i = 0; i < 2; i++) {
+        _postComments[i] = _prefs.getStringList('post_comments_$i') ?? [];
+      }
     });
   }
 
@@ -36,6 +53,31 @@ class _SocialFeedState extends State<SocialFeed> {
       _likedPosts[index] = !_likedPosts[index];
     });
     await _prefs.setBool('post_liked_$index', _likedPosts[index]);
+  }
+
+  Future<void> _addComment(int postIndex) async {
+    if (_commentControllers[postIndex].text.trim().isEmpty) return;
+
+    setState(() {
+      _postComments[postIndex].add(_commentControllers[postIndex].text);
+      _commentControllers[postIndex].clear();
+    });
+
+    await _prefs.setStringList(
+      'post_comments_$postIndex',
+      _postComments[postIndex],
+    );
+  }
+
+  Future<void> _deleteComment(int postIndex, int commentIndex) async {
+    setState(() {
+      _postComments[postIndex].removeAt(commentIndex);
+    });
+
+    await _prefs.setStringList(
+      'post_comments_$postIndex',
+      _postComments[postIndex],
+    );
   }
 
   @override
@@ -107,7 +149,13 @@ class _SocialFeedState extends State<SocialFeed> {
               ),
               IconButton(
                 icon: const Icon(Icons.search, color: Colors.white),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SearchScreen()),
+                  );
+                },
               ),
               const SizedBox(width: 40),
               IconButton(
@@ -177,7 +225,7 @@ class _SocialFeedState extends State<SocialFeed> {
 
   Widget _buildPost(int index) {
     if (_likedPosts.isEmpty) {
-      return const SizedBox(); // Retorna un widget vacío mientras se cargan los datos
+      return const SizedBox();
     }
 
     return Card(
@@ -237,6 +285,65 @@ class _SocialFeedState extends State<SocialFeed> {
                     style: TextStyle(color: Colors.grey[600])),
                 const Spacer(),
                 const Icon(Icons.comment_outlined),
+              ],
+            ),
+          ),
+          if (_postComments[index].isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _postComments[index].asMap().entries.map((entry) {
+                  final int commentIndex = entry.key;
+                  final String comment = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            comment,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, size: 18),
+                          color: Colors.grey[600],
+                          onPressed: () => _deleteComment(index, commentIndex),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _commentControllers[index],
+                    decoration: InputDecoration(
+                      hintText: 'Añade un comentario...',
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.send),
+                  color: Colors.blue,
+                  onPressed: () => _addComment(index),
+                ),
               ],
             ),
           ),

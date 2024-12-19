@@ -61,6 +61,7 @@ class ProfileScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: Colors.grey.withOpacity(0.1),
                       spreadRadius: 1,
                       blurRadius: 10,
@@ -194,6 +195,7 @@ class ProfileScreen extends StatelessWidget {
                           horizontal: 16,
                           vertical: 8,
                         ),
+                        // ignore: deprecated_member_use
                         backgroundColor: Colors.lightBlue.withOpacity(0.1),
                       ),
                     ),
