@@ -1,0 +1,12 @@
+{
+  "name": "tecoacademy-firestore-init",
+  "version": "1.0.0",
+  "description": "Script to initialize Firestore database structure for TecoAcademy",
+  "main": "initFirestore.js",
+  "scripts": {
+    "init": "node initFirestore.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.11.1"
+  }
+}

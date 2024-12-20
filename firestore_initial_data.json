@@ -1,0 +1,282 @@
+{
+  "users": {
+    "schema": {
+      "profile": {
+        "email": "",
+        "username": "",
+        "fullName": "",
+        "role": "",
+        "bio": "",
+        "avatarUrl": "",
+        "xpTotal": 0,
+        "level": 1,
+        "achievements": [],
+        "badges": [],
+        "joinDate": "",
+        "lastActive": ""
+      },
+      "schedule": {
+        "days": [],
+        "shift": "",
+        "preferredTimeZone": ""
+      },
+      "group": "",
+      "stats": {
+        "postsCount": 0,
+        "followersCount": 0,
+        "followingCount": 0,
+        "completedCourses": 0,
+        "totalProjectsCompleted": 0,
+        "commentsCount": 0
+      },
+      "preferences": {
+        "notifications": true,
+        "emailUpdates": true,
+        "language": "es"
+      }
+    }
+  },
+  "courses": {
+    "schema": {
+      "name": "",
+      "description": "",
+      "thumbnail": "",
+      "category": "",
+      "level": "",
+      "duration": "",
+      "month": 0,
+      "week": 0,
+      "programmingModule": false,
+      "creationModule": false,
+      "status": "",
+      "enrollmentCount": 0,
+      "rating": 0,
+      "comments": [
+        {
+          "userId": "",
+          "content": "",
+          "timestamp": "",
+          "likes": [],
+          "replies": [
+            {
+              "userId": "",
+              "content": "",
+              "timestamp": "",
+              "likes": []
+            }
+          ]
+        }
+      ],
+      "modules": [
+        {
+          "name": "",
+          "description": "",
+          "order": 0,
+          "type": "",
+          "xpValue": 0,
+          "content": [],
+          "resources": [],
+          "quizzes": [],
+          "assignments": [],
+          "comments": [
+            {
+              "userId": "",
+              "content": "",
+              "timestamp": "",
+              "likes": [],
+              "replies": []
+            }
+          ]
+        }
+      ],
+      "requirements": [],
+      "objectives": [],
+      "mentor": {
+        "id": "",
+        "name": "",
+        "photoUrl": "",
+        "specialization": ""
+      },
+      "tags": []
+    }
+  },
+  "projects": {
+    "schema": {
+      "name": "",
+      "description": "",
+      "status": "",
+      "group": "",
+      "startDate": "",
+      "endDate": "",
+      "thumbnail": "",
+      "members": {
+        "schema": {
+          "role": "",
+          "joinDate": "",
+          "permissions": []
+        }
+      },
+      "comments": [
+        {
+          "userId": "",
+          "content": "",
+          "timestamp": "",
+          "likes": [],
+          "replies": [],
+          "attachments": []
+        }
+      ],
+      "kanban": {
+        "columns": [
+          {
+            "id": "",
+            "title": "",
+            "order": 0,
+            "tasks": []
+          }
+        ],
+        "tasks": [
+          {
+            "id": "",
+            "title": "",
+            "description": "",
+            "status": "",
+            "priority": "",
+            "assignees": [],
+            "labels": [],
+            "dueDate": "",
+            "attachments": [],
+            "comments": [
+              {
+                "userId": "",
+                "content": "",
+                "timestamp": "",
+                "likes": [],
+                "replies": []
+              }
+            ],
+            "checklist": [],
+            "timeTracking": {
+              "estimate": "",
+              "spent": ""
+            }
+          }
+        ]
+      },
+      "files": [],
+      "milestones": []
+    }
+  },
+  "social": {
+    "posts": {
+      "schema": {
+        "userId": "",
+        "content": "",
+        "type": "",
+        "media": [
+          {
+            "type": "",
+            "url": "",
+            "thumbnail": ""
+          }
+        ],
+        "likes": [],
+        "comments": [
+          {
+            "userId": "",
+            "content": "",
+            "timestamp": "",
+            "likes": [],
+            "replies": [
+              {
+                "userId": "",
+                "content": "",
+                "timestamp": "",
+                "likes": []
+              }
+            ]
+          }
+        ],
+        "tags": [],
+        "location": "",
+        "visibility": "",
+        "timestamp": "",
+        "edited": false,
+        "shares": 0
+      }
+    },
+    "follows": {
+      "schema": {
+        "followerId": "",
+        "followingId": "",
+        "timestamp": ""
+      }
+    }
+  },
+  "achievements": {
+    "schema": {
+      "title": "",
+      "description": "",
+      "icon": "",
+      "xpValue": 0,
+      "requirements": [],
+      "category": "",
+      "rarity": "",
+      "unlockedBy": []
+    }
+  },
+  "statistics": {
+    "schema": {
+      "userId": "",
+      "weeklyActivity": {},
+      "platformUsage": {
+        "mobile": 0,
+        "desktop": 0,
+        "tablet": 0
+      },
+      "completionRate": 0,
+      "inProgress": 0,
+      "completed": 0,
+      "upcoming": 0,
+      "learningPath": {
+        "currentLevel": 0,
+        "progress": 0,
+        "nextMilestone": ""
+      },
+      "engagement": {
+        "postsCreated": 0,
+        "commentsWritten": 0,
+        "projectsContributed": 0,
+        "dailyStreak": 0
+      }
+    }
+  },
+  "notifications": {
+    "schema": {
+      "userId": "",
+      "type": "",
+      "title": "",
+      "message": "",
+      "read": false,
+      "timestamp": "",
+      "data": {},
+      "action": ""
+    }
+  },
+  "groups": {
+    "schema": {
+      "name": "",
+      "description": "",
+      "members": [],
+      "admins": [],
+      "courses": [],
+      "projects": [],
+      "schedule": {
+        "days": [],
+        "shift": "",
+        "startTime": "",
+        "endTime": ""
+      }
+    }
+  }
+} 
