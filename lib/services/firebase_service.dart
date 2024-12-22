@@ -12,14 +12,16 @@ class FirebaseService {
   CollectionReference get achievements => _firestore.collection('achievements');
   CollectionReference get statistics => _firestore.collection('statistics');
   // Acceso directo a posts como subcolección de social
-  CollectionReference get posts => _firestore.collection('social').doc('posts').collection('items');
+  CollectionReference get posts =>
+      _firestore.collection('social').doc('posts').collection('items');
 
   // Métodos para Usuarios
   Future<DocumentSnapshot> getUserProfile(String userId) async {
     return await users.doc(userId).get();
   }
 
-  Future<void> updateUserProfile(String userId, Map<String, dynamic> data) async {
+  Future<void> updateUserProfile(
+      String userId, Map<String, dynamic> data) async {
     await users.doc(userId).update(data);
   }
 
@@ -42,7 +44,8 @@ class FirebaseService {
     return await projects.doc(projectId).get();
   }
 
-  Future<void> updateProjectTask(String projectId, String taskId, Map<String, dynamic> data) async {
+  Future<void> updateProjectTask(
+      String projectId, String taskId, Map<String, dynamic> data) async {
     await projects.doc(projectId).update({
       'kanban.tasks.$taskId': data,
     });
@@ -62,9 +65,7 @@ class FirebaseService {
 
   // Métodos para Logros
   Future<QuerySnapshot> getUserAchievements(String userId) async {
-    return await achievements
-        .where('userId', isEqualTo: userId)
-        .get();
+    return await achievements.where('userId', isEqualTo: userId).get();
   }
 
   // Métodos para Estadísticas
@@ -72,7 +73,8 @@ class FirebaseService {
     return await statistics.doc(userId).get();
   }
 
-  Future<void> updateUserStatistics(String userId, Map<String, dynamic> data) async {
+  Future<void> updateUserStatistics(
+      String userId, Map<String, dynamic> data) async {
     await statistics.doc(userId).update(data);
   }
 
@@ -80,7 +82,7 @@ class FirebaseService {
   Future<Map<String, dynamic>> getUserCompleteProfile(String userId) async {
     final userProfile = await getUserProfile(userId);
     final userStats = await getUserStatistics(userId);
-    
+
     return {
       'profile': userProfile.data(),
       'statistics': userStats.data(),
@@ -90,7 +92,7 @@ class FirebaseService {
   Future<List<DocumentSnapshot>> getGroupMembers(String groupId) async {
     final schedule = await getGroupSchedule(groupId);
     final scheduleData = schedule.data() as Map<String, dynamic>;
-    
+
     final List<String> memberIds = [
       ...List<String>.from(scheduleData['students'] ?? []),
       scheduleData['teacher'],
@@ -102,7 +104,7 @@ class FirebaseService {
 
   Future<void> initializeStatisticsData() async {
     final FirebaseFirestore db = FirebaseFirestore.instance;
-    
+
     // Documento de estadísticas para el dashboard
     await db.collection('statistics').doc('dashboard').set({
       'weeklyActivity': [4.2, 3.8, 6.5, 4.9, 5.2, 3.1, 2.8], // Horas por día
@@ -120,39 +122,29 @@ class FirebaseService {
       },
       'currentCourse': {
         'title': 'Flutter Development Advanced',
-        'description': 'Learn advanced Flutter patterns and Firebase integration',
+        'description':
+            'Learn advanced Flutter patterns and Firebase integration',
         'progress': 75,
-        'participants': [
-          'user1', 'user2', 'user3', 'user4'
-        ]
+        'participants': ['user1', 'user2', 'user3', 'user4']
       },
       'schedule': [
         {
           'time': '09:30-11:00',
           'course': 'Technical Flutter',
           'level': 'Beginner',
-          'mentor': {
-            'name': 'Alex Rivera',
-            'photoUrl': 'assets/mentor1.jpg'
-          }
+          'mentor': {'name': 'Alex Rivera', 'photoUrl': 'assets/mentor1.jpg'}
         },
         {
           'time': '11:00-13:00',
           'course': 'Flutter Architecture',
           'level': 'Advanced',
-          'mentor': {
-            'name': 'Maria García',
-            'photoUrl': 'assets/mentor2.jpg'
-          }
+          'mentor': {'name': 'Maria García', 'photoUrl': 'assets/mentor2.jpg'}
         },
         {
           'time': '15:00-17:00',
           'course': 'Firebase & Flutter',
           'level': 'Intermediate',
-          'mentor': {
-            'name': 'Carlos López',
-            'photoUrl': 'assets/mentor3.jpg'
-          }
+          'mentor': {'name': 'Carlos López', 'photoUrl': 'assets/mentor3.jpg'}
         }
       ]
     });
@@ -163,26 +155,25 @@ class FirebaseService {
       // Obtener el documento completo del usuario
       final userDoc = await users.doc(userId).get();
       final userData = userDoc.data() as Map<String, dynamic>;
-      
+
       // Obtener estadísticas
       final statsDoc = await statistics.doc(userId).get();
       final statsData = statsDoc.data() as Map<String, dynamic>?;
-      
+
       // Obtener logros
-      final achievementsQuery = await achievements
-          .where('userId', isEqualTo: userId)
-          .get();
-      
+      final achievementsQuery =
+          await achievements.where('userId', isEqualTo: userId).get();
+
       // Obtener proyectos
-      final projectsQuery = await projects
-          .where('members.$userId', isNull: false)
-          .get();
+      final projectsQuery =
+          await projects.where('members.$userId', isNull: false).get();
 
       return {
         'profile': userData['profile'] ?? {},
         'stats': userData['stats'] ?? {},
         'statistics': statsData ?? {},
-        'achievements': achievementsQuery.docs.map((doc) => doc.data()).toList(),
+        'achievements':
+            achievementsQuery.docs.map((doc) => doc.data()).toList(),
         'projects': projectsQuery.docs.map((doc) => doc.data()).toList(),
       };
     } catch (e) {
@@ -208,10 +199,7 @@ class FirebaseService {
         'days': ['Lunes', 'Miércoles', 'Viernes'],
         'shift': 'Mañana'
       },
-      'stats': {
-        'postsCount': 10,
-        'completedCourses': 3
-      }
+      'stats': {'postsCount': 10, 'completedCourses': 3}
     });
 
     // Crear estadísticas del usuario
@@ -233,7 +221,8 @@ class FirebaseService {
       },
       'currentCourse': {
         'title': 'Flutter Development Advanced',
-        'description': 'Learn advanced Flutter patterns and Firebase integration',
+        'description':
+            'Learn advanced Flutter patterns and Firebase integration',
         'progress': 75,
         'participants': ['user1', 'user2', 'user3', 'user4']
       },
@@ -242,21 +231,15 @@ class FirebaseService {
           'time': '09:30-11:00',
           'course': 'Technical Flutter',
           'level': 'Beginner',
-          'mentor': {
-            'name': 'Alex Rivera',
-            'photoUrl': 'assets/mentor1.jpg'
-          }
+          'mentor': {'name': 'Alex Rivera', 'photoUrl': 'assets/mentor1.jpg'}
         },
         {
           'time': '11:00-13:00',
           'course': 'Flutter Architecture',
           'level': 'Advanced',
-          'mentor': {
-            'name': 'Maria García',
-            'photoUrl': 'assets/mentor2.jpg'
-          }
+          'mentor': {'name': 'Maria García', 'photoUrl': 'assets/mentor2.jpg'}
         }
       ]
     });
   }
-} 
+}

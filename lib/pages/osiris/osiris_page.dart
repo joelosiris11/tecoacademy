@@ -19,7 +19,8 @@ class _OsirisPageState extends State<OsirisPage> {
   Future<void> _handleLogin() async {
     if (_emailController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor ingresa un correo electrónico')),
+        const SnackBar(
+            content: Text('Por favor ingresa un correo electrónico')),
       );
       return;
     }
@@ -47,7 +48,6 @@ class _OsirisPageState extends State<OsirisPage> {
         _isLoggedIn = true;
         _isLoading = false;
       });
-
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
@@ -95,10 +95,9 @@ class _OsirisPageState extends State<OsirisPage> {
   }
 
   Widget _buildUserDataView() {
-    final profile = _userData?['profile'] as Map<String, dynamic>?;
-    final stats = _userData?['stats'] as Map<String, dynamic>?;
     final statistics = _userData?['statistics'] as Map<String, dynamic>?;
-    final weeklyActivity = statistics?['weeklyActivity'] as List<dynamic>? ?? [];
+    final weeklyActivity =
+        statistics?['weeklyActivity'] as List<dynamic>? ?? [];
 
     return Container(
       color: Colors.grey[100],
@@ -147,7 +146,8 @@ class _OsirisPageState extends State<OsirisPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(20),
@@ -169,8 +169,8 @@ class _OsirisPageState extends State<OsirisPage> {
                       barRods: [
                         BarChartRodData(
                           toY: entry.value.toDouble(),
-                          color: entry.key == 4 
-                              ? Colors.deepPurple 
+                          color: entry.key == 4
+                              ? Colors.deepPurple
                               : Colors.deepPurple.withOpacity(0.3),
                           width: 20,
                           borderRadius: BorderRadius.circular(4),
@@ -184,7 +184,15 @@ class _OsirisPageState extends State<OsirisPage> {
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                          const days = [
+                            'Mon',
+                            'Tue',
+                            'Wed',
+                            'Thu',
+                            'Fri',
+                            'Sat',
+                            'Sun'
+                          ];
                           return Text(
                             days[value.toInt()],
                             style: const TextStyle(
@@ -234,9 +242,11 @@ class _OsirisPageState extends State<OsirisPage> {
       child: Row(
         children: [
           Icon(
-            platform == 'Teco Platform' ? Icons.school :
-            platform == 'Zoom' ? Icons.videocam :
-            Icons.groups,
+            platform == 'Teco Platform'
+                ? Icons.school
+                : platform == 'Zoom'
+                    ? Icons.videocam
+                    : Icons.groups,
             size: 20,
             color: Colors.grey[600],
           ),
@@ -261,7 +271,7 @@ class _OsirisPageState extends State<OsirisPage> {
 
   Widget _buildProgressCard(Map<String, dynamic>? statistics) {
     final progress = statistics?['progress'] as Map<String, dynamic>? ?? {};
-    
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -335,8 +345,9 @@ class _OsirisPageState extends State<OsirisPage> {
   }
 
   Widget _buildCurrentCourseCard(Map<String, dynamic>? statistics) {
-    final currentCourse = statistics?['currentCourse'] as Map<String, dynamic>? ?? {};
-    
+    final currentCourse =
+        statistics?['currentCourse'] as Map<String, dynamic>? ?? {};
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -356,7 +367,8 @@ class _OsirisPageState extends State<OsirisPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.green[50],
                     borderRadius: BorderRadius.circular(20),
@@ -414,7 +426,8 @@ class _OsirisPageState extends State<OsirisPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.amber[50],
                     borderRadius: BorderRadius.circular(20),
@@ -437,7 +450,7 @@ class _OsirisPageState extends State<OsirisPage> {
 
   Widget _buildScheduleCard(Map<String, dynamic>? statistics) {
     final schedule = statistics?['schedule'] as List<dynamic>? ?? [];
-    
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -510,7 +523,8 @@ class _OsirisPageState extends State<OsirisPage> {
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
@@ -560,4 +574,4 @@ class _OsirisPageState extends State<OsirisPage> {
     _emailController.dispose();
     super.dispose();
   }
-} 
+}

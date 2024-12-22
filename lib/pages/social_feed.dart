@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'add_post_screen.dart';
-import 'add_story_screen.dart';
-import 'favorites_screen.dart';
-import 'profile_screen.dart';
-import 'search_screen.dart';
+import '../models/social_models.dart';
+import '../widgets/social_feed_widgets.dart';
+import '../pages/messages_page.dart';
 
 class SocialFeed extends StatefulWidget {
   const SocialFeed({super.key});
@@ -14,335 +11,580 @@ class SocialFeed extends StatefulWidget {
 }
 
 class _SocialFeedState extends State<SocialFeed> {
-  List<bool> _likedPosts = [];
-  late SharedPreferences _prefs;
-  final List<List<String>> _postComments = [[], []];
-  final List<TextEditingController> _commentControllers = [
-    TextEditingController(),
-    TextEditingController(),
-  ];
+  List<Post> _posts = [];
+  final String _currentUserId = 'user_123';
+  final TextEditingController _newPostController = TextEditingController();
+  String? _selectedImageUrl;
+
+  @override
+  void dispose() {
+    _newPostController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
-    _loadLikedPosts();
+    _loadPosts();
   }
 
-  @override
-  void dispose() {
-    for (var controller in _commentControllers) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  Future<void> _loadLikedPosts() async {
-    _prefs = await SharedPreferences.getInstance();
+  // Métodos de datos
+  Future<void> _loadPosts() async {
+    // Simulación de carga desde Firebase
     setState(() {
-      _likedPosts = List.generate(
-          2, (index) => _prefs.getBool('post_liked_$index') ?? false);
+      _posts = [
+        Post(
+          id: 'post1',
+          userId: 'user_1',
+          userName: 'María García',
+          userAvatar: 'https://via.placeholder.com/150',
+          description: '¡Acabo de terminar mi primer proyecto en Flutter! 🚀',
+          imageUrl: 'https://via.placeholder.com/500',
+          timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+          likedBy: ['user_2', 'user_3'],
+          category: 'desarrollo',
+          comments: [
+            Comment(
+              id: 'comment1',
+              userId: 'user_2',
+              userName: 'Juan Pérez',
+              userAvatar: 'https://via.placeholder.com/150',
+              text: '¡Increíble trabajo! 👏',
+              timestamp: DateTime.now().subtract(const Duration(hours: 1)),
+              likedBy: ['user_1'],
+              replies: [
+                Comment(
+                  id: 'reply1',
+                  userId: 'user_1',
+                  userName: 'María García',
+                  userAvatar: 'https://via.placeholder.com/150',
+                  text: '¡Gracias Juan! 😊',
+                  timestamp:
+                      DateTime.now().subtract(const Duration(minutes: 30)),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ];
+    });
+  }
 
-      for (int i = 0; i < 2; i++) {
-        _postComments[i] = _prefs.getStringList('post_comments_$i') ?? [];
+  void _createNewPost(String text, String? imageUrl) {
+    final newPost = Post(
+      id: 'post_${DateTime.now().millisecondsSinceEpoch}',
+      userId: _currentUserId,
+      userName: 'Usuario Actual',
+      userAvatar: 'https://via.placeholder.com/150',
+      description: text,
+      imageUrl: imageUrl ?? '',
+      timestamp: DateTime.now(),
+      likedBy: [],
+      comments: [],
+      category: 'general',
+    );
+
+    setState(() {
+      _posts.insert(0, newPost);
+    });
+  }
+
+  // Métodos de acción
+  void _handleComment(String postId, String commentText) {
+    if (commentText.trim().isEmpty) return;
+
+    setState(() {
+      final postIndex = _posts.indexWhere((p) => p.id == postId);
+      if (postIndex != -1) {
+        final post = _posts[postIndex];
+        final comments = List<Comment>.from(post.comments);
+
+        comments.add(Comment(
+          id: 'comment_${DateTime.now().millisecondsSinceEpoch}',
+          userId: _currentUserId,
+          userName: 'Usuario Actual',
+          userAvatar: 'https://via.placeholder.com/150',
+          text: commentText,
+          timestamp: DateTime.now(),
+        ));
+
+        _posts[postIndex] = Post(
+          id: post.id,
+          userId: post.userId,
+          userName: post.userName,
+          userAvatar: post.userAvatar,
+          description: post.description,
+          imageUrl: post.imageUrl,
+          timestamp: post.timestamp,
+          likedBy: post.likedBy,
+          comments: comments,
+          category: post.category,
+        );
       }
     });
   }
 
-  Future<void> _toggleLike(int index) async {
-    setState(() {
-      _likedPosts[index] = !_likedPosts[index];
-    });
-    await _prefs.setBool('post_liked_$index', _likedPosts[index]);
+  void _handleShare(String postId) {
+    // TODO: Implementar compartir post
   }
 
-  Future<void> _addComment(int postIndex) async {
-    if (_commentControllers[postIndex].text.trim().isEmpty) return;
-
+  void _handleLike(String postId) {
     setState(() {
-      _postComments[postIndex].add(_commentControllers[postIndex].text);
-      _commentControllers[postIndex].clear();
-    });
+      final postIndex = _posts.indexWhere((p) => p.id == postId);
+      if (postIndex != -1) {
+        final post = _posts[postIndex];
+        final likedBy = List<String>.from(post.likedBy);
 
-    await _prefs.setStringList(
-      'post_comments_$postIndex',
-      _postComments[postIndex],
-    );
+        if (likedBy.contains(_currentUserId)) {
+          likedBy.remove(_currentUserId);
+        } else {
+          likedBy.add(_currentUserId);
+        }
+
+        _posts[postIndex] = Post(
+          id: post.id,
+          userId: post.userId,
+          userName: post.userName,
+          userAvatar: post.userAvatar,
+          description: post.description,
+          imageUrl: post.imageUrl,
+          timestamp: post.timestamp,
+          likedBy: likedBy,
+          comments: post.comments,
+          category: post.category,
+        );
+      }
+    });
   }
 
-  Future<void> _deleteComment(int postIndex, int commentIndex) async {
+  void _handleLikeComment(String postId, String commentId) {
     setState(() {
-      _postComments[postIndex].removeAt(commentIndex);
-    });
+      final postIndex = _posts.indexWhere((p) => p.id == postId);
+      if (postIndex != -1) {
+        final post = _posts[postIndex];
+        final comments = List<Comment>.from(post.comments);
 
-    await _prefs.setStringList(
-      'post_comments_$postIndex',
-      _postComments[postIndex],
-    );
+        for (var i = 0; i < comments.length; i++) {
+          if (comments[i].id == commentId) {
+            final comment = comments[i];
+            final likedBy = List<String>.from(comment.likedBy);
+
+            if (likedBy.contains(_currentUserId)) {
+              likedBy.remove(_currentUserId);
+            } else {
+              likedBy.add(_currentUserId);
+            }
+
+            comments[i] = Comment(
+              id: comment.id,
+              userId: comment.userId,
+              userName: comment.userName,
+              userAvatar: comment.userAvatar,
+              text: comment.text,
+              timestamp: comment.timestamp,
+              likedBy: likedBy,
+              replies: comment.replies,
+            );
+            break;
+          }
+        }
+
+        _posts[postIndex] = Post(
+          id: post.id,
+          userId: post.userId,
+          userName: post.userName,
+          userAvatar: post.userAvatar,
+          description: post.description,
+          imageUrl: post.imageUrl,
+          timestamp: post.timestamp,
+          likedBy: post.likedBy,
+          comments: comments,
+          category: post.category,
+        );
+      }
+    });
   }
 
+  void _handleReplyComment(String postId, String commentId, String replyText) {
+    if (replyText.trim().isEmpty) return;
+
+    setState(() {
+      final postIndex = _posts.indexWhere((p) => p.id == postId);
+      if (postIndex != -1) {
+        final post = _posts[postIndex];
+        final comments = List<Comment>.from(post.comments);
+
+        for (var i = 0; i < comments.length; i++) {
+          if (comments[i].id == commentId) {
+            final comment = comments[i];
+            final replies = List<Comment>.from(comment.replies);
+
+            replies.add(Comment(
+              id: 'reply_${DateTime.now().millisecondsSinceEpoch}',
+              userId: _currentUserId,
+              userName: 'Usuario Actual',
+              userAvatar: 'https://via.placeholder.com/150',
+              text: replyText,
+              timestamp: DateTime.now(),
+            ));
+
+            comments[i] = Comment(
+              id: comment.id,
+              userId: comment.userId,
+              userName: comment.userName,
+              userAvatar: comment.userAvatar,
+              text: comment.text,
+              timestamp: comment.timestamp,
+              likedBy: comment.likedBy,
+              replies: replies,
+            );
+            break;
+          }
+        }
+
+        _posts[postIndex] = Post(
+          id: post.id,
+          userId: post.userId,
+          userName: post.userName,
+          userAvatar: post.userAvatar,
+          description: post.description,
+          imageUrl: post.imageUrl,
+          timestamp: post.timestamp,
+          likedBy: post.likedBy,
+          comments: comments,
+          category: post.category,
+        );
+      }
+    });
+  }
+
+  // Métodos de UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('SocialTeco',
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          ),
-        ],
-        elevation: 0,
-        backgroundColor: Colors.white,
-      ),
-      body: Column(
+      backgroundColor: const Color(0xFF15202B),
+      body: Row(
         children: [
-          // Sección de historias
-          Container(
-            height: 100,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return _buildStoryAvatar(index == 0);
-              },
-            ),
-          ),
-          // Sección de posts
-          Expanded(
-            child: ListView.builder(
-              itemCount: 2,
-              itemBuilder: (context, index) {
-                return _buildPost(index);
-              },
-            ),
-          ),
+          _buildSideMenu(),
+          _buildMainContent(),
+          _buildTrendingSection(),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddPostScreen()),
-          );
-        },
-        backgroundColor: Colors.lightBlue,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add),
+    );
+  }
+
+  Widget _buildSideMenu() {
+    return Container(
+      width: 275,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: const BoxDecoration(
+        border: Border(
+          right: BorderSide(
+            color: Color(0xFF38444D),
+            width: 0.5,
+          ),
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8.0,
-        color: Colors.blue[400],
-        child: Container(
-          height: 60,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Icon(
+              Icons.school,
+              color: Colors.white,
+              size: 32,
+            ),
+          ),
+          Column(
             children: [
-              IconButton(
-                icon: const Icon(Icons.home, color: Colors.white),
-                onPressed: () {},
+              SocialFeedWidgets.buildNavItem(Icons.home, 'Inicio', true),
+              SocialFeedWidgets.buildNavItem(Icons.explore, 'Explorar', false),
+              SocialFeedWidgets.buildNavItem(
+                  Icons.notifications_outlined, 'Notificaciones', false),
+              SocialFeedWidgets.buildNavItem(
+                Icons.mail_outline,
+                'Mensajes',
+                false,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MessagesPage()),
+                ),
               ),
-              IconButton(
-                icon: const Icon(Icons.search, color: Colors.white),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SearchScreen()),
-                  );
-                },
-              ),
-              const SizedBox(width: 40),
-              IconButton(
-                icon: const Icon(Icons.favorite_border, color: Colors.white),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FavoritesScreen()),
-                  );
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.person_outline, color: Colors.white),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ProfileScreen()),
-                  );
-                },
-              ),
+              SocialFeedWidgets.buildNavItem(
+                  Icons.bookmark_border, 'Guardados', false),
+              SocialFeedWidgets.buildNavItem(Icons.list_alt, 'Listas', false),
+              SocialFeedWidgets.buildNavItem(
+                  Icons.person_outline, 'Perfil', false),
             ],
           ),
-        ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              SocialFeedWidgets.showCreatePostModal(
+                context,
+                _newPostController,
+                _selectedImageUrl,
+                _createNewPost,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1D9BF0),
+              minimumSize: const Size(double.infinity, 52),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(26),
+              ),
+            ),
+            child: const Text(
+              'Publicar',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildStoryAvatar(bool isFirst) {
-    return GestureDetector(
-      onTap: isFirst
-          ? () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AddStoryScreen()),
-              );
-            }
-          : null,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.lightBlue,
-                  width: 2,
+  Widget _buildMainContent() {
+    return Expanded(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Color(0xFF38444D),
+                  width: 0.5,
                 ),
               ),
-              child: CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.grey[200],
-                child: isFirst
-                    ? const Icon(Icons.add, size: 30, color: Colors.black54)
-                    : null,
-              ),
             ),
-            const SizedBox(height: 4),
-            const Text('', style: TextStyle(fontSize: 12)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPost(int index) {
-    if (_likedPosts.isEmpty) {
-      return const SizedBox();
-    }
-
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      elevation: 0,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.grey[200],
-            ),
-            title: Container(
-              height: 14,
-              width: 100,
-              color: Colors.grey[200],
-            ),
-            subtitle: Container(
-              height: 10,
-              width: 50,
-              margin: const EdgeInsets.only(top: 4),
-              color: Colors.grey[200],
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.more_horiz),
-              onPressed: () {},
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              height: 12,
-              width: double.infinity,
-              color: Colors.grey[200],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            height: 200,
-            width: double.infinity,
-            color: Colors.grey[100],
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                IconButton(
-                  icon: Icon(
-                    _likedPosts[index] ? Icons.favorite : Icons.favorite_border,
-                    color: _likedPosts[index] ? Colors.red : null,
+                const Text(
+                  'Inicio',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                  onPressed: () => _toggleLike(index),
                 ),
-                const SizedBox(width: 8),
-                Text(_likedPosts[index] ? '1 others' : '0 others',
-                    style: TextStyle(color: Colors.grey[600])),
                 const Spacer(),
-                const Icon(Icons.comment_outlined),
+                IconButton(
+                  icon: const Icon(Icons.auto_awesome, color: Colors.white),
+                  onPressed: () {},
+                ),
               ],
             ),
           ),
-          if (_postComments[index].isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _postComments[index].asMap().entries.map((entry) {
-                  final int commentIndex = entry.key;
-                  final String comment = entry.value;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            comment,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 18),
-                          color: Colors.grey[600],
-                          onPressed: () => _deleteComment(index, commentIndex),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _commentControllers[index],
-                    decoration: InputDecoration(
-                      hintText: 'Añade un comentario...',
-                      hintStyle: TextStyle(color: Colors.grey[400]),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: Colors.grey[300]!),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
+          Expanded(
+            child: ListView.builder(
+              itemCount: _posts.length,
+              itemBuilder: (context, index) {
+                final post = _posts[index];
+                return Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Color(0xFF38444D),
+                        width: 0.5,
                       ),
                     ),
                   ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundImage: NetworkImage(post.userAvatar),
+                            ),
+                            const SizedBox(width: 8),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  post.userName,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  '@${post.userId}',
+                                  style: const TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          post.description,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        if (post.imageUrl.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Image.network(post.imageUrl),
+                        ],
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SocialFeedWidgets.buildActionButton(
+                              Icons.chat_bubble_outline,
+                              post.comments.length.toString(),
+                              () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: const Color(0xFF15202B),
+                                  builder: (context) {
+                                    final commentController =
+                                        TextEditingController();
+                                    return Padding(
+                                      padding: EdgeInsets.only(
+                                        bottom: MediaQuery.of(context)
+                                            .viewInsets
+                                            .bottom,
+                                      ),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            TextField(
+                                              controller: commentController,
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                              decoration: const InputDecoration(
+                                                hintText:
+                                                    'Escribe un comentario...',
+                                                hintStyle: TextStyle(
+                                                    color: Colors.grey),
+                                                border: OutlineInputBorder(),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 16),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                if (commentController
+                                                    .text.isNotEmpty) {
+                                                  _handleComment(post.id,
+                                                      commentController.text);
+                                                  Navigator.pop(context);
+                                                }
+                                              },
+                                              child: const Text('Comentar'),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            SocialFeedWidgets.buildActionButton(
+                              Icons.repeat,
+                              '0',
+                              () => _handleShare(post.id),
+                            ),
+                            SocialFeedWidgets.buildActionButton(
+                              post.likedBy.contains(_currentUserId)
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              post.likedBy.length.toString(),
+                              () => _handleLike(post.id),
+                              color: post.likedBy.contains(_currentUserId)
+                                  ? Colors.red
+                                  : null,
+                            ),
+                            SocialFeedWidgets.buildActionButton(
+                              Icons.share_outlined,
+                              '',
+                              () => _handleShare(post.id),
+                            ),
+                          ],
+                        ),
+                        if (post.comments.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          ...post.comments.map(
+                            (comment) => SocialFeedWidgets.buildCommentCard(
+                              post.id,
+                              comment,
+                              _currentUserId,
+                              _handleLikeComment,
+                              _handleReplyComment,
+                              context,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTrendingSection() {
+    return Container(
+      width: 350,
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
+        border: Border(
+          left: BorderSide(
+            color: Color(0xFF38444D),
+            width: 0.5,
+          ),
+        ),
+      ),
+      child: Column(
+        children: [
+          SocialFeedWidgets.buildSearchBar(),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF253341),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Historias',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  color: Colors.blue,
-                  onPressed: () => _addComment(index),
+                const SizedBox(height: 16),
+                SocialFeedWidgets.buildStoryItem(
+                  'María García',
+                  'https://via.placeholder.com/150',
+                  'Hace 5m',
+                ),
+                SocialFeedWidgets.buildStoryItem(
+                  'Juan Pérez',
+                  'https://via.placeholder.com/150',
+                  'Hace 15m',
+                ),
+                SocialFeedWidgets.buildStoryItem(
+                  'Ana López',
+                  'https://via.placeholder.com/150',
+                  'Hace 30m',
                 ),
               ],
             ),
