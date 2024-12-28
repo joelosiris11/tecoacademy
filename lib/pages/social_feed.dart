@@ -262,7 +262,7 @@ class _SocialFeedState extends State<SocialFeed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF15202B),
+      backgroundColor: Colors.white,
       body: Row(
         children: [
           _buildSideMenu(),
@@ -277,10 +277,11 @@ class _SocialFeedState extends State<SocialFeed> {
     return Container(
       width: 275,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           right: BorderSide(
-            color: Color(0xFF38444D),
+            color: Colors.grey[300]!,
             width: 0.5,
           ),
         ),
@@ -291,7 +292,7 @@ class _SocialFeedState extends State<SocialFeed> {
             padding: EdgeInsets.all(12.0),
             child: Icon(
               Icons.school,
-              color: Colors.white,
+              color: Colors.black87,
               size: 32,
             ),
           ),
@@ -354,27 +355,28 @@ class _SocialFeedState extends State<SocialFeed> {
         children: [
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
+              color: Colors.white,
               border: Border(
                 bottom: BorderSide(
-                  color: Color(0xFF38444D),
+                  color: Colors.grey[300]!,
                   width: 0.5,
                 ),
               ),
             ),
             child: Row(
               children: [
-                const Text(
+                Text(
                   'Inicio',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.grey[900],
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.auto_awesome, color: Colors.white),
+                  icon: Icon(Icons.auto_awesome, color: Colors.grey[900]),
                   onPressed: () {},
                 ),
               ],
@@ -386,13 +388,19 @@ class _SocialFeedState extends State<SocialFeed> {
               itemBuilder: (context, index) {
                 final post = _posts[index];
                 return Container(
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Color(0xFF38444D),
-                        width: 0.5,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey[200]!,
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
                       ),
-                    ),
+                    ],
+                    border: Border.all(color: Colors.grey[100]!),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -410,14 +418,14 @@ class _SocialFeedState extends State<SocialFeed> {
                               children: [
                                 Text(
                                   post.userName,
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: Colors.grey[900],
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   '@${post.userId}',
-                                  style: const TextStyle(color: Colors.grey),
+                                  style: TextStyle(color: Colors.grey[600]),
                                 ),
                               ],
                             ),
@@ -426,11 +434,14 @@ class _SocialFeedState extends State<SocialFeed> {
                         const SizedBox(height: 8),
                         Text(
                           post.description,
-                          style: const TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.grey[800]),
                         ),
                         if (post.imageUrl.isNotEmpty) ...[
                           const SizedBox(height: 8),
-                          Image.network(post.imageUrl),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(post.imageUrl),
+                          ),
                         ],
                         const SizedBox(height: 8),
                         Row(
@@ -440,53 +451,10 @@ class _SocialFeedState extends State<SocialFeed> {
                               Icons.chat_bubble_outline,
                               post.comments.length.toString(),
                               () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  backgroundColor: const Color(0xFF15202B),
-                                  builder: (context) {
-                                    final commentController =
-                                        TextEditingController();
-                                    return Padding(
-                                      padding: EdgeInsets.only(
-                                        bottom: MediaQuery.of(context)
-                                            .viewInsets
-                                            .bottom,
-                                      ),
-                                      child: Container(
-                                        padding: const EdgeInsets.all(16),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            TextField(
-                                              controller: commentController,
-                                              style: const TextStyle(
-                                                  color: Colors.white),
-                                              decoration: const InputDecoration(
-                                                hintText:
-                                                    'Escribe un comentario...',
-                                                hintStyle: TextStyle(
-                                                    color: Colors.grey),
-                                                border: OutlineInputBorder(),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                if (commentController
-                                                    .text.isNotEmpty) {
-                                                  _handleComment(post.id,
-                                                      commentController.text);
-                                                  Navigator.pop(context);
-                                                }
-                                              },
-                                              child: const Text('Comentar'),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                SocialFeedWidgets.showCommentModal(
+                                  context,
+                                  post.id,
+                                  _handleComment,
                                 );
                               },
                             ),
@@ -541,10 +509,11 @@ class _SocialFeedState extends State<SocialFeed> {
     return Container(
       width: 350,
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(
-            color: Color(0xFF38444D),
+            color: Colors.grey[300]!,
             width: 0.5,
           ),
         ),
@@ -556,16 +525,24 @@ class _SocialFeedState extends State<SocialFeed> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF253341),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey[200]!,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+              border: Border.all(color: Colors.grey[100]!),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Historias',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.grey[900],
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
