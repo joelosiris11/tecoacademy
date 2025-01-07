@@ -2,122 +2,168 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../services/firebase_service.dart';
 
-class UserProgressWidget extends StatelessWidget {
+class UserProgressWidget extends StatefulWidget {
+  @override
+  _UserProgressWidgetState createState() => _UserProgressWidgetState();
+}
+
+class _UserProgressWidgetState extends State<UserProgressWidget> {
   final FirebaseService _firebaseService = FirebaseService();
+  final List<Color> _avatarColors = [
+    Color(0xFF1976D2), // Azul intenso
+    Color(0xFF2E7D32), // Verde intenso
+    Color(0xFFF57C00), // Naranja intenso
+    Color(0xFFFBC02D), // Amarillo intenso
+  ];
+
+  Color _getAvatarColor(int index) {
+    if (_avatarColors.isEmpty) {
+      return Colors.blue; // Color por defecto si la lista está vacía
+    }
+    // Asegurarse de que el índice sea positivo antes de usar el operador módulo
+    final safeIndex = index.abs() % _avatarColors.length;
+    return _avatarColors[safeIndex];
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Progreso de Usuarios',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Roboto',
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Progreso de Usuarios',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          SizedBox(height: 16),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: _firebaseService.users.snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error al cargar los usuarios'));
-                }
+            SizedBox(height: 16),
+            Container(
+              height: 300, // Altura fija para el contenedor
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _firebaseService.users.snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
 
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
 
-                final users = snapshot.data?.docs ?? [];
+                  final users = snapshot.data?.docs ?? [];
+                  if (users.isEmpty) {
+                    return Text('No hay usuarios registrados');
+                  }
 
-                if (users.isEmpty) {
-                  return Center(child: Text('No hay usuarios registrados'));
-                }
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: AlwaysScrollableScrollPhysics(), // Permitir scroll
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      final userData =
+                          users[index].data() as Map<String, dynamic>;
+                      final profile =
+                          userData['profile'] as Map<String, dynamic>? ?? {};
+                      final username =
+                          (profile['username'] as String?)?.trim() ?? 'Usuario';
+                      final role = profile['role'] as String? ?? 'Estudiante';
+                      final xp = profile['xpTotal'] as int? ?? 0;
+                      final level = profile['level'] as int? ?? 1;
 
-                return ListView.builder(
-                  itemCount: users.length,
-                  itemBuilder: (context, index) {
-                    final userData =
-                        users[index].data() as Map<String, dynamic>;
-                    final profile = userData['profile'] as Map<String, dynamic>;
-                    final name = profile['fullName'] ?? '';
-                    final xp = profile['xpTotal'] ?? 0;
-                    final level = profile['level'] ?? 1;
-                    final role = profile['role'] ?? '';
-
-                    return Card(
-                      margin: EdgeInsets.only(bottom: 8),
-                      child: ListTile(
-                        title: Text(
-                          name,
-                          style: TextStyle(
-                            fontFamily: 'Roboto',
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
                           children: [
-                            Text(
-                              role,
-                              style: TextStyle(
-                                fontFamily: 'Roboto',
-                                color: Colors.grey[600],
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor: _getAvatarColor(index),
+                              child: Text(
+                                (username.isNotEmpty ? username[0] : 'U')
+                                    .toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                            SizedBox(height: 4),
-                            LinearProgressIndicator(
-                              value: (xp % 1000) / 1000,
-                              backgroundColor: Colors.grey[200],
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    username,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    role,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Nivel $level - $xp XP',
-                              style: TextStyle(
-                                fontFamily: 'Roboto',
-                                color: Colors.grey[600],
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'XP',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue[300],
+                                  ),
+                                ),
+                                Text(
+                                  '$xp',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue[300],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(width: 16),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                'Nivel $level',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[700],
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.grey[200],
-                          child: Text(
-                            name.isNotEmpty
-                                ? name.substring(0, 1).toUpperCase()
-                                : '?',
-                            style: TextStyle(
-                              fontFamily: 'Roboto',
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

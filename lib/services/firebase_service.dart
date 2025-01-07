@@ -247,4 +247,9 @@ class FirebaseService {
   Stream<QuerySnapshot> getScheduleStream() {
     return _firestore.collection('schedules').snapshots();
   }
+
+  // Eliminar un horario
+  Future<void> deleteSchedule(String scheduleId) async {
+    await _firestore.collection('schedules').doc(scheduleId).delete();
+  }
 }
