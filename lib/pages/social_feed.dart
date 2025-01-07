@@ -4,7 +4,12 @@ import '../widgets/social_feed_widgets.dart';
 import '../pages/messages_page.dart';
 
 class SocialFeed extends StatefulWidget {
-  const SocialFeed({super.key});
+  final String userId;
+
+  const SocialFeed({
+    Key? key,
+    required this.userId,
+  }) : super(key: key);
 
   @override
   State<SocialFeed> createState() => _SocialFeedState();
@@ -12,7 +17,7 @@ class SocialFeed extends StatefulWidget {
 
 class _SocialFeedState extends State<SocialFeed> {
   List<Post> _posts = [];
-  final String _currentUserId = 'user_123';
+  late final String _currentUserId;
   final TextEditingController _newPostController = TextEditingController();
   String? _selectedImageUrl;
 
@@ -25,6 +30,7 @@ class _SocialFeedState extends State<SocialFeed> {
   @override
   void initState() {
     super.initState();
+    _currentUserId = widget.userId;
     _loadPosts();
   }
 

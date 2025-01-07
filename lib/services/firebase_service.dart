@@ -242,4 +242,9 @@ class FirebaseService {
       ]
     });
   }
+
+  // Obtener stream de horarios
+  Stream<QuerySnapshot> getScheduleStream() {
+    return _firestore.collection('schedules').snapshots();
+  }
 }

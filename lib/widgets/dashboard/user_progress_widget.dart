@@ -1,22 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../services/firebase_service.dart';
 
 class UserProgressWidget extends StatelessWidget {
-  const UserProgressWidget({super.key});
+  final FirebaseService _firebaseService = FirebaseService();
 
   @override
   Widget build(BuildContext context) {
-    // Lista de usuarios de ejemplo
-    final List<Map<String, dynamic>> users = [
-      {'name': 'Ana García', 'xp': 2500},
-      {'name': 'Carlos López', 'xp': 2300},
-      {'name': 'María Rodríguez', 'xp': 2100},
-      {'name': 'Juan Pérez', 'xp': 1900},
-      {'name': 'Laura Torres', 'xp': 1800},
-    ];
-
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -33,36 +25,94 @@ class UserProgressWidget extends StatelessWidget {
         children: [
           Text(
             'Progreso de Usuarios',
-            style: GoogleFonts.roboto(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              fontFamily: 'Roboto',
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 16),
           Expanded(
-            child: ListView.builder(
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        users[index]['name'],
-                        style: GoogleFonts.roboto(fontSize: 16),
-                      ),
-                      Text(
-                        '${users[index]['xp']} XP',
-                        style: GoogleFonts.roboto(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _firebaseService.users.snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error al cargar los usuarios'));
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                final users = snapshot.data?.docs ?? [];
+
+                if (users.isEmpty) {
+                  return Center(child: Text('No hay usuarios registrados'));
+                }
+
+                return ListView.builder(
+                  itemCount: users.length,
+                  itemBuilder: (context, index) {
+                    final userData =
+                        users[index].data() as Map<String, dynamic>;
+                    final profile = userData['profile'] as Map<String, dynamic>;
+                    final name = profile['fullName'] ?? '';
+                    final xp = profile['xpTotal'] ?? 0;
+                    final level = profile['level'] ?? 1;
+                    final role = profile['role'] ?? '';
+
+                    return Card(
+                      margin: EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        title: Text(
+                          name,
+                          style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              role,
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            LinearProgressIndicator(
+                              value: (xp % 1000) / 1000,
+                              backgroundColor: Colors.grey[200],
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Nivel $level - $xp XP',
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.grey[200],
+                          child: Text(
+                            name.isNotEmpty
+                                ? name.substring(0, 1).toUpperCase()
+                                : '?',
+                            style: TextStyle(
+                              fontFamily: 'Roboto',
+                              color: Colors.grey[800],
+                            ),
+                          ),
                         ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 );
               },
             ),
